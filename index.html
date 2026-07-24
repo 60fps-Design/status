@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>60fps Status</title>
-<meta name="description" content="Live status and uptime history for the 60fps MCP API, PRO accounts and website.">
+<meta name="description" content="Status and uptime history for 60fps.">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>%E2%97%8F</text></svg>">
 <style>
@@ -88,14 +88,13 @@
   <div id="checks"></div>
 
   <footer>
-    Checked every 5 minutes from GitHub Actions, independently of the servers above, so this page
-    stays up when they do not. Times are your local time.
+    Checked every 5 minutes, independently of the services above.
   </footer>
 </div>
 
 <script>
-// The page is deliberately dumb: it renders data/summary.json and computes nothing of its own,
-// so what you read here cannot drift from what was actually measured.
+// Renders data/summary.json and computes nothing of its own, so the page cannot drift
+// from what was measured.
 const pct = (v) => v === null || v === undefined ? "–" : (v >= 99.995 ? "100" : v.toFixed(2)) + "%";
 
 function barClass(p) {

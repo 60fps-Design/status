@@ -1,21 +1,12 @@
 name: Uptime check
 
-# Probes the 60fps endpoints and commits the result back to this repo, which GitHub Pages serves.
-#
-# Runs here, on GitHub's infrastructure, ON PURPOSE: a status page hosted on the servers it monitors
-# goes down exactly when it is needed. On 2026-07-24 every route on the MCP function returned 500 for
-# ~4h, so a /status path on that host would have been dead too.
-#
-# Security posture:
-#   - No secrets. Only public, unauthenticated health endpoints are probed, so there is no token or
-#     licence key in this repo to leak.
-#   - The built-in GITHUB_TOKEN is used, scoped to writing THIS repo only. No account-wide PAT
-#     (which is what the off-the-shelf status tools ask for, and what would be dangerous here).
-#   - Only actions/checkout is used, SHA-pinned. Nothing else runs third-party code.
+# Probes the endpoints in config.json and commits the result back, which Pages serves.
+# Runs on GitHub, not on the monitored hosts, so it survives their outages.
+# No secrets: only public health endpoints, the built-in GITHUB_TOKEN, one SHA-pinned action.
 
 on:
   schedule:
-    - cron: "*/5 * * * *" # every 5 minutes (GitHub's minimum; it may run a little late under load)
+    - cron: "*/5 * * * *" # GitHub's minimum; can run late under load
   workflow_dispatch:
   push:
     branches: [main]
@@ -23,7 +14,7 @@ on:
 permissions:
   contents: write
 
-# Never let two runs commit at once, and never cancel a run midway: a cancelled run loses a sample.
+# One commit at a time. Never cancel: a cancelled run loses a sample.
 concurrency:
   group: uptime
   cancel-in-progress: false
@@ -48,7 +39,7 @@ jobs:
             exit 0
           fi
           git commit -m "status: $(date -u '+%Y-%m-%d %H:%M UTC') [skip ci]"
-          # The schedule can overlap with a manual run; rebase rather than fail the check.
+          # Runs can overlap; rebase rather than fail.
           for i in 1 2 3; do
             git pull --rebase --autostash origin main && git push origin main && exit 0
             echo "push attempt $i failed, retrying"

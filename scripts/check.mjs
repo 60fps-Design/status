@@ -1,18 +1,8 @@
 /**
- * Uptime probe. Runs in GitHub Actions on a schedule, writes results back into this repo.
+ * Uptime probe. Runs in GitHub Actions, writes results back into this repo.
  *
- * Design constraints, in priority order:
- *   1. NOTHING SENSITIVE IS EVER PUBLISHED. We record the HTTP status code and the response time.
- *      We never record, log or commit a response body, a header or a URL query. If an endpoint
- *      starts returning an internal error message, that message does not end up on a public page.
- *   2. NO SECRETS. Only unauthenticated health endpoints are probed, so this repo needs no token,
- *      no licence key and no credentials of any kind. Nothing here is worth stealing.
- *   3. NO UNBOUNDED GROWTH. Raw samples are kept for 48h; older samples collapse into one row per
- *      day per check, kept for 90 days. The repo stays small however long this runs.
- *
- * A check counts as UP only when it answers within the timeout AND returns the exact status the
- * config expects. "Answered, but with a 500" is DOWN, which is the case that mattered on
- * 2026-07-24: the site returned 200 while the API returned 500.
+ * Records only status code and response time, never a body or header: this data is public.
+ * A check is UP only if it answers in time AND returns the exact status the config expects.
  */
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 
@@ -24,7 +14,7 @@ const config = JSON.parse(readFileSync(new URL("../config.json", import.meta.url
 const HISTORY_PATH = new URL("../data/history.json", import.meta.url);
 const SUMMARY_PATH = new URL("../data/summary.json", import.meta.url);
 
-/** Probe one endpoint. Never throws, and never returns anything derived from the response body. */
+/** Never throws, and never returns anything derived from the response body. */
 async function probe(check) {
   const started = Date.now();
   try {
@@ -36,8 +26,7 @@ async function probe(check) {
     });
     return { ok: res.status === check.expect, status: res.status, ms: Date.now() - started };
   } catch {
-    // Timeout, DNS failure, connection refused. Deliberately no error text: it can contain the
-    // host's internal detail, and this file is public.
+    // Timeout, DNS failure, connection refused. No error text: it can leak host internals.
     return { ok: false, status: 0, ms: Date.now() - started };
   }
 }
@@ -93,8 +82,7 @@ function uptimePct(entry, windowMs) {
   return total ? (up / total) * 100 : null;
 }
 
-// summary.json is what the page renders. Keeping it precomputed means the page stays a dumb static
-// file with no logic that could disagree with the data.
+// Precomputed so the page stays static, with no logic that could disagree with the data.
 const summary = {
   generated: now,
   checks: config.checks.map((check) => {
