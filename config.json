@@ -14,13 +14,6 @@
       "blurb": "pro.60fps.design",
       "url": "https://pro.60fps.design/health",
       "expect": 200
-    },
-    {
-      "id": "site",
-      "name": "Website",
-      "blurb": "60fps.design",
-      "url": "https://60fps.design/",
-      "expect": 200
     }
   ]
 }

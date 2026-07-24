@@ -87,7 +87,7 @@
 
   <div id="checks"></div>
 
-  <footer>
+  <footer id="foot">
     Checked every 5 minutes, independently of the services above.
   </footer>
 </div>
@@ -113,6 +113,17 @@ fetch("data/summary.json?" + Date.now())
       allUp ? "All systems operational" : "Some systems are down";
     document.getElementById("updated").textContent =
       "Updated " + new Date(s.generated).toLocaleString();
+
+    // A dash means we were not monitoring for that whole window yet, not that uptime was poor.
+    if (s.checks.some((c) => [c.uptime24h, c.uptime7d, c.uptime90d].includes(null))) {
+      const d = new Date(s.since).toLocaleDateString(undefined, {
+        day: "numeric", month: "long", year: "numeric",
+      });
+      document.getElementById("foot").insertAdjacentHTML(
+        "beforeend",
+        ` Monitoring began ${d}, so longer windows show a dash until there is data.`
+      );
+    }
 
     document.getElementById("checks").innerHTML = s.checks.map((c) => `
       <div class="card">

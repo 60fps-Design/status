@@ -36,9 +36,20 @@ const day = (t) => new Date(t).toISOString().slice(0, 10);
 
 const history = existsSync(HISTORY_PATH) ? JSON.parse(readFileSync(HISTORY_PATH, "utf8")) : {};
 
+// Drop data for checks that are no longer configured, so removing one leaves nothing behind.
+for (const id of Object.keys(history)) {
+  if (!config.checks.some((c) => c.id === id)) delete history[id];
+}
+
 for (const check of config.checks) {
   const result = await probe(check);
-  const entry = (history[check.id] ??= { raw: [], daily: {} });
+  const entry = (history[check.id] ??= { raw: [], daily: {}, since: now });
+  // Backfill for entries written before `since` existed: earliest evidence we actually have.
+  entry.since ??= Math.min(
+    ...entry.raw.map((s) => s.t),
+    ...Object.keys(entry.daily).map((d) => Date.parse(`${d}T00:00:00Z`)),
+    now
+  );
 
   entry.raw.push({ t: now, ok: result.ok, status: result.status, ms: result.ms });
 
@@ -64,9 +75,16 @@ for (const check of config.checks) {
   console.log(`${check.id.padEnd(6)} ${result.ok ? "up  " : "DOWN"} status=${result.status} ${result.ms}ms`);
 }
 
-/** Uptime percentage over a trailing window, blending aggregated days with recent raw samples. */
+/**
+ * Uptime percentage over a trailing window, blending aggregated days with recent raw samples.
+ *
+ * Returns null unless we were monitoring for the WHOLE window. Averaging the handful of samples
+ * we happen to have would report "100% over 90 days" on day one, which is a lie by omission on a
+ * page whose only job is to be trusted. The page renders null as a dash.
+ */
 function uptimePct(entry, windowMs) {
   const cutoff = now - windowMs;
+  if (entry.since > cutoff) return null;
   let up = 0;
   let total = 0;
   for (const [d, v] of Object.entries(entry.daily)) {
@@ -112,6 +130,7 @@ const summary = {
   }),
 };
 summary.allUp = summary.checks.every((c) => c.up);
+summary.since = Math.min(...config.checks.map((c) => history[c.id].since));
 
 writeFileSync(HISTORY_PATH, JSON.stringify(history));
 writeFileSync(SUMMARY_PATH, JSON.stringify(summary, null, 2));
