@@ -1,4 +1,4 @@
-# 60fps status
+# 60fps Status
 
 Public status page for [60fps.design](https://60fps.design): **https://status.60fps.design**
 

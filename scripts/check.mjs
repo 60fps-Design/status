@@ -32,7 +32,7 @@ async function probe(check) {
       method: "GET",
       redirect: "follow",
       signal: AbortSignal.timeout(TIMEOUT_MS),
-      headers: { "user-agent": "60fps-status/1.0 (+https://status.60fps.design)" },
+      headers: { "user-agent": "60fps-Status/1.0 (+https://status.60fps.design)" },
     });
     return { ok: res.status === check.expect, status: res.status, ms: Date.now() - started };
   } catch {
