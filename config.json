@@ -1,0 +1,26 @@
+{
+  "brand": "60fps",
+  "checks": [
+    {
+      "id": "mcp",
+      "name": "MCP API",
+      "blurb": "mcp.60fps.design — the remote MCP server your AI client connects to",
+      "url": "https://mcp.60fps.design/health",
+      "expect": 200
+    },
+    {
+      "id": "pro",
+      "name": "PRO accounts",
+      "blurb": "pro.60fps.design — licence checks and sign in",
+      "url": "https://pro.60fps.design/health",
+      "expect": 200
+    },
+    {
+      "id": "site",
+      "name": "Website",
+      "blurb": "60fps.design — the shot library",
+      "url": "https://60fps.design/",
+      "expect": 200
+    }
+  ]
+}
