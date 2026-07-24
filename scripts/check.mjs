@@ -61,9 +61,8 @@ for (const check of config.checks) {
       keep.push(sample);
       continue;
     }
-    const d = (entry.daily[day(sample.t)] ??= { up: 0, total: 0, msSum: 0 });
+    const d = (entry.daily[day(sample.t)] ??= { up: 0, total: 0 });
     d.total++;
-    d.msSum += sample.ms;
     if (sample.ok) d.up++;
   }
   entry.raw = keep;
@@ -76,11 +75,8 @@ for (const check of config.checks) {
 }
 
 /**
- * Uptime percentage over a trailing window, blending aggregated days with recent raw samples.
- *
- * Returns null unless we were monitoring for the WHOLE window. Averaging the handful of samples
- * we happen to have would report "100% over 90 days" on day one, which is a lie by omission on a
- * page whose only job is to be trusted. The page renders null as a dash.
+ * Uptime over a trailing window. Returns null unless we monitored the whole window, so a partial
+ * sample can never be reported as a full-window figure. The page renders null as a dash.
  */
 function uptimePct(entry, windowMs) {
   const cutoff = now - windowMs;
@@ -106,7 +102,6 @@ const summary = {
   checks: config.checks.map((check) => {
     const entry = history[check.id];
     const latest = entry.raw[entry.raw.length - 1];
-    const recent = entry.raw.slice(-24);
     return {
       id: check.id,
       name: check.name,
@@ -116,8 +111,7 @@ const summary = {
       uptime24h: uptimePct(entry, 86_400_000),
       uptime7d: uptimePct(entry, 7 * 86_400_000),
       uptime90d: uptimePct(entry, 90 * 86_400_000),
-      spark: recent.map((s) => ({ ok: s.ok, ms: s.ms })),
-      // 90 day strip, oldest first. null = no data that day (before monitoring started).
+      // 90 day strip, oldest first. null = no data that day.
       days: Array.from({ length: 90 }, (_, i) => {
         const d = day(now - (89 - i) * 86_400_000);
         const agg = entry.daily[d];
@@ -130,7 +124,6 @@ const summary = {
   }),
 };
 summary.allUp = summary.checks.every((c) => c.up);
-summary.since = Math.min(...config.checks.map((c) => history[c.id].since));
 
 writeFileSync(HISTORY_PATH, JSON.stringify(history));
 writeFileSync(SUMMARY_PATH, JSON.stringify(summary, null, 2));

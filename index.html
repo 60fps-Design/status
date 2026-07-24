@@ -6,7 +6,8 @@
 <title>60fps Status</title>
 <meta name="description" content="Status and uptime history for 60fps.">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>%E2%97%8F</text></svg>">
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
 <style>
   :root {
     --bg: #ffffff; --panel: #ffffff; --border: #e6e6e9; --text: #16161a;
@@ -87,7 +88,7 @@
 
   <div id="checks"></div>
 
-  <footer id="foot">
+  <footer>
     Checked every 5 minutes, independently of the services above.
   </footer>
 </div>
@@ -113,17 +114,6 @@ fetch("data/summary.json?" + Date.now())
       allUp ? "All systems operational" : "Some systems are down";
     document.getElementById("updated").textContent =
       "Updated " + new Date(s.generated).toLocaleString();
-
-    // A dash means we were not monitoring for that whole window yet, not that uptime was poor.
-    if (s.checks.some((c) => [c.uptime24h, c.uptime7d, c.uptime90d].includes(null))) {
-      const d = new Date(s.since).toLocaleDateString(undefined, {
-        day: "numeric", month: "long", year: "numeric",
-      });
-      document.getElementById("foot").insertAdjacentHTML(
-        "beforeend",
-        ` Monitoring began ${d}, so longer windows show a dash until there is data.`
-      );
-    }
 
     document.getElementById("checks").innerHTML = s.checks.map((c) => `
       <div class="card">

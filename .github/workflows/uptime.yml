@@ -1,8 +1,6 @@
 name: Uptime check
 
 # Probes the endpoints in config.json and commits the result back, which Pages serves.
-# Runs on GitHub, not on the monitored hosts, so it survives their outages.
-# No secrets: only public health endpoints, the built-in GITHUB_TOKEN, one SHA-pinned action.
 
 on:
   schedule:

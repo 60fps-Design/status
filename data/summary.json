@@ -1,57 +1,15 @@
 {
-  "generated": 1784927050784,
+  "generated": 1784927335464,
   "checks": [
     {
       "id": "mcp",
       "name": "MCP API",
       "blurb": "mcp.60fps.design",
       "up": true,
-      "ms": 321,
+      "ms": 445,
       "uptime24h": null,
       "uptime7d": null,
       "uptime90d": null,
-      "spark": [
-        {
-          "ok": true,
-          "ms": 851
-        },
-        {
-          "ok": true,
-          "ms": 657
-        },
-        {
-          "ok": true,
-          "ms": 416
-        },
-        {
-          "ok": true,
-          "ms": 445
-        },
-        {
-          "ok": true,
-          "ms": 508
-        },
-        {
-          "ok": true,
-          "ms": 456
-        },
-        {
-          "ok": true,
-          "ms": 426
-        },
-        {
-          "ok": true,
-          "ms": 497
-        },
-        {
-          "ok": true,
-          "ms": 879
-        },
-        {
-          "ok": true,
-          "ms": 321
-        }
-      ],
       "days": [
         {
           "d": "2026-04-26",
@@ -420,52 +378,10 @@
       "name": "PRO accounts",
       "blurb": "pro.60fps.design",
       "up": true,
-      "ms": 233,
+      "ms": 461,
       "uptime24h": null,
       "uptime7d": null,
       "uptime90d": null,
-      "spark": [
-        {
-          "ok": true,
-          "ms": 719
-        },
-        {
-          "ok": true,
-          "ms": 402
-        },
-        {
-          "ok": true,
-          "ms": 438
-        },
-        {
-          "ok": true,
-          "ms": 622
-        },
-        {
-          "ok": true,
-          "ms": 179
-        },
-        {
-          "ok": true,
-          "ms": 91
-        },
-        {
-          "ok": true,
-          "ms": 109
-        },
-        {
-          "ok": true,
-          "ms": 151
-        },
-        {
-          "ok": true,
-          "ms": 422
-        },
-        {
-          "ok": true,
-          "ms": 233
-        }
-      ],
       "days": [
         {
           "d": "2026-04-26",
@@ -830,6 +746,5 @@
       ]
     }
   ],
-  "allUp": true,
-  "since": 1784923449551
+  "allUp": true
 }
