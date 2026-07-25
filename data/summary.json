@@ -1,12 +1,12 @@
 {
-  "generated": 1784974737215,
+  "generated": 1784979560144,
   "checks": [
     {
       "id": "mcp",
       "name": "MCP API",
       "blurb": "mcp.60fps.design",
       "up": true,
-      "ms": 328,
+      "ms": 543,
       "uptime24h": null,
       "uptime7d": null,
       "uptime90d": null,
@@ -378,7 +378,7 @@
       "name": "PRO accounts",
       "blurb": "pro.60fps.design",
       "up": true,
-      "ms": 256,
+      "ms": 153,
       "uptime24h": null,
       "uptime7d": null,
       "uptime90d": null,
