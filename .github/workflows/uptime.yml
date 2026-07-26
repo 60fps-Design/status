@@ -4,7 +4,9 @@ name: Uptime check
 
 on:
   schedule:
-    - cron: "*/5 * * * *" # GitHub's minimum; can run late under load
+    # GitHub's minimum, but it throttles cron on shared runners. Observed median spacing ~65min,
+    # worst 212min. Treat this as "at least hourly", which is what the page claims.
+    - cron: "*/5 * * * *"
   workflow_dispatch:
   push:
     branches: [main]
