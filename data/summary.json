@@ -1,5 +1,5 @@
 {
-  "generated": 1789923707851,
+  "generated": 1789932145577,
   "checks": [
     {
       "id": "mcp",
@@ -378,7 +378,7 @@
       "name": "PRO accounts",
       "blurb": "pro.60fps.design",
       "up": true,
-      "ms": 326,
+      "ms": 361,
       "uptime24h": 100,
       "uptime7d": 100,
       "uptime90d": null,
