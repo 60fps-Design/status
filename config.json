@@ -34,6 +34,16 @@
       ],
       "title": "Sign-in to the MCP and PRO login unavailable",
       "detail": "Our database provider paused the database that holds sign-ins and sessions. Connecting the MCP, refreshing a session and logging in to PRO failed. Everything already in progress kept its data. Resolved by restoring the database; checks now test it directly every 5 minutes."
+    },
+    {
+      "start": "2026-09-29T15:13:00Z",
+      "end": "2026-09-29T15:18:00Z",
+      "affects": [
+        "mcp",
+        "pro"
+      ],
+      "title": "Brief slowdown: some MCP requests and sign-ins timed out",
+      "detail": "Our database provider stopped responding for a few minutes. Requests that needed it waited and then failed, so some tool calls and session refreshes timed out. It recovered on its own; our 5-minute check caught it and alerted us within two minutes."
     }
   ]
 }
