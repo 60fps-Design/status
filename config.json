@@ -5,15 +5,35 @@
       "id": "mcp",
       "name": "MCP API",
       "blurb": "mcp.60fps.design",
-      "url": "https://mcp.60fps.design/health",
-      "expect": 200
+      "url": "https://mcp.60fps.design/health?deep=1",
+      "expect": 200,
+      "note": "deep=1 also pings the database (Redis). Plain /health stayed green through the 2026-09-28 outage."
     },
     {
       "id": "pro",
       "name": "PRO accounts",
       "blurb": "pro.60fps.design",
       "url": "https://pro.60fps.design/health",
-      "expect": 200
+      "expect": 200,
+      "require": [
+        {
+          "url": "https://mcp.60fps.design/health?deep=1",
+          "expect": 200,
+          "why": "PRO accounts and sessions live in the same database"
+        }
+      ]
+    }
+  ],
+  "incidents": [
+    {
+      "start": "2026-09-28T22:19:00Z",
+      "end": "2026-09-29T03:37:00Z",
+      "affects": [
+        "mcp",
+        "pro"
+      ],
+      "title": "Sign-in to the MCP and PRO login unavailable",
+      "detail": "Our database provider paused the database that holds sign-ins and sessions. Connecting the MCP, refreshing a session and logging in to PRO failed. Everything already in progress kept its data. Resolved by restoring the database; checks now test it directly every 5 minutes."
     }
   ]
 }

@@ -60,6 +60,12 @@
   .bar.ok { background: var(--up); }
   .bar.bad { background: var(--down); }
   .bar.part { background: linear-gradient(to bottom, var(--up) 55%, var(--down) 55%); }
+  .incidents { margin-top: 32px; display: grid; gap: 12px; }
+  .incidents h2 { font-size: 15px; font-weight: 600; margin: 0 0 4px; }
+  .incident { border-left: 3px solid var(--down); padding: 2px 0 2px 14px; }
+  .incident .when { font-size: 13px; opacity: 0.7; font-variant-numeric: tabular-nums; }
+  .incident .what { font-weight: 600; margin: 2px 0; }
+  .incident .detail { font-size: 14px; opacity: 0.85; line-height: 1.5; max-width: 65ch; }
 
   .legend {
     display: flex; justify-content: space-between; color: var(--muted);
@@ -101,6 +107,7 @@ const pct = (v) => v === null || v === undefined ? "–" : (v >= 99.995 ? "100" 
 function barClass(p) {
   if (p === null) return "";
   if (p >= 99.995) return "ok";
+  if (p >= 99) return "part";
   if (p >= 50) return "part";
   return "bad";
 }
@@ -133,6 +140,23 @@ fetch("data/summary.json?" + Date.now())
           <div class="metric"><b>${c.ms} ms</b>last response</div>
         </div>
       </div>`).join("");
+
+    // Known incidents, newest first. Kept for 90 days.
+    const inc = s.incidents || [];
+    if (inc.length) {
+      const fmt = (t) => new Date(t).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+      const dur = (a, b) => { const m = Math.round((Date.parse(b) - Date.parse(a)) / 60000); return (m >= 60 ? Math.floor(m / 60) + "h " : "") + (m % 60) + "m"; };
+      const esc = (x) => String(x).replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[ch]);
+      const box = document.createElement("div");
+      box.className = "incidents";
+      box.innerHTML = "<h2>Past incidents</h2>" + inc.map((i) => `
+        <div class="incident">
+          <div class="when">${fmt(i.start)} to ${fmt(i.end)} (${dur(i.start, i.end)})</div>
+          <div class="what">${esc(i.title)}</div>
+          <div class="detail">${esc(i.detail)}</div>
+        </div>`).join("");
+      document.getElementById("checks").after(box);
+    }
   })
   .catch(() => {
     document.getElementById("banner-dot").className = "dot down";

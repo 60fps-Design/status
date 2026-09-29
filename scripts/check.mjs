@@ -42,7 +42,13 @@ for (const id of Object.keys(history)) {
 }
 
 for (const check of config.checks) {
-  const result = await probe(check);
+  let result = await probe(check);
+  // A check can depend on more than its own URL (PRO accounts live in the MCP's database), and is
+  // only UP if every one of them is.
+  for (const dep of check.require ?? []) {
+    const r = await probe(dep);
+    if (!r.ok) result = { ...result, ok: false, status: r.status };
+  }
   const entry = (history[check.id] ??= { raw: [], daily: {}, since: now });
   // Backfill for entries written before `since` existed: earliest evidence we actually have.
   entry.since ??= Math.min(
@@ -78,9 +84,27 @@ for (const check of config.checks) {
  * Uptime over a trailing window. Returns null unless we monitored the whole window, so a partial
  * sample can never be reported as a full-window figure. The page renders null as a dash.
  */
-function uptimePct(entry, windowMs) {
+/**
+ * Known incidents (config.json), counted as downtime ON TOP of what the probes saw. Added after
+ * 2026-09-28: the probes checked a shallow /health, stayed green through a 5h18m outage, and the page
+ * said 100%. An outage the probes missed is still an outage.
+ */
+const incidents = (config.incidents ?? []).map((i) => ({ ...i, s: Date.parse(i.start), e: Date.parse(i.end) }));
+function incidentMs(id, from, to) {
+  let ms = 0;
+  for (const i of incidents) if (i.affects.includes(id)) ms += Math.max(0, Math.min(i.e, to) - Math.max(i.s, from));
+  return ms;
+}
+
+function uptimePct(entry, windowMs, id) {
   const cutoff = now - windowMs;
   if (entry.since > cutoff) return null;
+  const known = incidentMs(id, cutoff, now);
+  const probed = probePct(entry, cutoff);
+  return probed === null ? null : probed * (1 - known / windowMs);
+}
+
+function probePct(entry, cutoff) {
   let up = 0;
   let total = 0;
   for (const [d, v] of Object.entries(entry.daily)) {
@@ -108,9 +132,9 @@ const summary = {
       blurb: check.blurb,
       up: latest.ok,
       ms: latest.ms,
-      uptime24h: uptimePct(entry, 86_400_000),
-      uptime7d: uptimePct(entry, 7 * 86_400_000),
-      uptime90d: uptimePct(entry, 90 * 86_400_000),
+      uptime24h: uptimePct(entry, 86_400_000, check.id),
+      uptime7d: uptimePct(entry, 7 * 86_400_000, check.id),
+      uptime90d: uptimePct(entry, 90 * 86_400_000, check.id),
       // 90 day strip, oldest first. null = no data that day.
       days: Array.from({ length: 90 }, (_, i) => {
         const d = day(now - (89 - i) * 86_400_000);
@@ -118,12 +142,20 @@ const summary = {
         const raws = entry.raw.filter((s) => day(s.t) === d);
         const up = (agg?.up ?? 0) + raws.filter((s) => s.ok).length;
         const total = (agg?.total ?? 0) + raws.length;
-        return { d, pct: total ? (up / total) * 100 : null };
+        if (!total) return { d, pct: null };
+        const dayStart = Date.parse(`${d}T00:00:00Z`);
+        const known = incidentMs(check.id, dayStart, dayStart + 86_400_000);
+        return { d, pct: (up / total) * 100 * (1 - known / 86_400_000) };
       }),
     };
   }),
 };
 summary.allUp = summary.checks.every((c) => c.up);
+// Newest first, for the "Past incidents" list on the page.
+summary.incidents = incidents
+  .filter((i) => i.e > now - 90 * 86_400_000)
+  .sort((a, b) => b.s - a.s)
+  .map(({ start, end, title, detail, affects }) => ({ start, end, title, detail, affects }));
 
 writeFileSync(HISTORY_PATH, JSON.stringify(history));
 writeFileSync(SUMMARY_PATH, JSON.stringify(summary, null, 2));

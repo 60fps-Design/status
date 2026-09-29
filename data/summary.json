@@ -1,14 +1,14 @@
 {
-  "generated": 1790644804033,
+  "generated": 1790655801149,
   "checks": [
     {
       "id": "mcp",
       "name": "MCP API",
       "blurb": "mcp.60fps.design",
       "up": true,
-      "ms": 257,
-      "uptime24h": 100,
-      "uptime7d": 100,
+      "ms": 505,
+      "uptime24h": 77.91666666666667,
+      "uptime7d": 96.8452380952381,
       "uptime90d": null,
       "days": [
         {
@@ -365,11 +365,11 @@
         },
         {
           "d": "2026-09-28",
-          "pct": 100
+          "pct": 92.98611111111111
         },
         {
           "d": "2026-09-29",
-          "pct": 100
+          "pct": 84.93055555555556
         }
       ]
     },
@@ -378,9 +378,9 @@
       "name": "PRO accounts",
       "blurb": "pro.60fps.design",
       "up": true,
-      "ms": 1227,
-      "uptime24h": 100,
-      "uptime7d": 100,
+      "ms": 485,
+      "uptime24h": 77.91666666666667,
+      "uptime7d": 96.8452380952381,
       "uptime90d": null,
       "days": [
         {
@@ -737,14 +737,26 @@
         },
         {
           "d": "2026-09-28",
-          "pct": 100
+          "pct": 92.98611111111111
         },
         {
           "d": "2026-09-29",
-          "pct": 100
+          "pct": 84.93055555555556
         }
       ]
     }
   ],
-  "allUp": true
+  "allUp": true,
+  "incidents": [
+    {
+      "start": "2026-09-28T22:19:00Z",
+      "end": "2026-09-29T03:37:00Z",
+      "title": "Sign-in to the MCP and PRO login unavailable",
+      "detail": "Our database provider paused the database that holds sign-ins and sessions. Connecting the MCP, refreshing a session and logging in to PRO failed. Everything already in progress kept its data. Resolved by restoring the database; checks now test it directly every 5 minutes.",
+      "affects": [
+        "mcp",
+        "pro"
+      ]
+    }
+  ]
 }
