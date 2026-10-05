@@ -1,20 +1,16 @@
 {
-  "generated": 1791154943705,
+  "generated": 1791165146406,
   "checks": [
     {
       "id": "mcp",
       "name": "MCP API",
       "blurb": "mcp.60fps.design",
       "up": true,
-      "ms": 449,
+      "ms": 391,
       "uptime24h": 100,
       "uptime7d": 96.79563492063492,
       "uptime90d": null,
       "days": [
-        {
-          "d": "2026-07-07",
-          "pct": null
-        },
         {
           "d": "2026-07-08",
           "pct": null
@@ -369,6 +365,10 @@
         },
         {
           "d": "2026-10-04",
+          "pct": 100
+        },
+        {
+          "d": "2026-10-05",
           "pct": 100
         }
       ]
@@ -378,15 +378,11 @@
       "name": "PRO accounts",
       "blurb": "pro.60fps.design",
       "up": true,
-      "ms": 433,
+      "ms": 257,
       "uptime24h": 100,
       "uptime7d": 96.79563492063492,
       "uptime90d": null,
       "days": [
-        {
-          "d": "2026-07-07",
-          "pct": null
-        },
         {
           "d": "2026-07-08",
           "pct": null
@@ -741,6 +737,10 @@
         },
         {
           "d": "2026-10-04",
+          "pct": 100
+        },
+        {
+          "d": "2026-10-05",
           "pct": 100
         }
       ]
